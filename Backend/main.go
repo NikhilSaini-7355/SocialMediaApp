@@ -2,16 +2,17 @@
 package main
 
 import (
+	
 	"fmt"
 	"net/http"
 	"log"
 	"os"
 	"context"
-	"time"
-
+	
+	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/routes"
+	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
-	"github.com/jackc/pgx/v5"
 )
 
 
@@ -23,28 +24,13 @@ func main() {
 		log.Fatal("error loading .env file")
 	}
 
-	dburl := os.Getenv("DB_URL")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	conn, err := pgx.Connect(ctx,dburl)
-	if err!=nil {
-		log.Fatalf("unable to connect to database %v\n",err)
-	}
-	defer conn.Close(ctx)
-
-	var greeting string
-    err = conn.QueryRow(ctx, "SELECT 'Hello from PostgreSQL'").Scan(&greeting)
-
-	fmt.Println(greeting)
+	database.InitDB()
+	
+	defer database.Conn.Close(context.Background())
 
 	port := os.Getenv("PORT");
 
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(greeting))
-	})
+	r.Mount("/api/users",routes.UserRouter())
 
 	fmt.Println("Server running on http://localhost:"+port)
 	http.ListenAndServe(":"+port, r)

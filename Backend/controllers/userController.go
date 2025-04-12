@@ -8,6 +8,7 @@ import (
 	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/database"
 	"golang.org/x/crypto/bcrypt"
 	"github.com/jackc/pgx/v5"
+	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/utils/helpers"
 )
 
 
@@ -66,12 +67,29 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := helpers.GenerateTokenAndCookie(userId,reqbody.Username)
+	if err!=nil {
+		http.Error(w,"Error generating token",http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: token,
+		Path: "/",
+		HttpOnly: true,
+		Secure: false,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge: 3600 * 24 * 15,
+	})
+
 	user := UserResponse{
 		ID:       userId,
 		Email:    reqbody.Email,
 		Username: reqbody.Username,
 		Name : reqbody.Name,
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(user)

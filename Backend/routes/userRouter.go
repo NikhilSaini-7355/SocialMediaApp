@@ -7,12 +7,22 @@ import (
 
 	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/controllers"
 	"github.com/go-chi/chi/v5"
+	"github.com/NikhilSaini-7355/SocialMediaApp/Backend/middlewares"
 )
 
 func UserRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/signup", controllers.SignUp)
+	r.Post("/login", controllers.Login)
+	r.Post("/logout", controllers.Logout)
+
+	r.Group(func(r chi.Router){
+		r.Use(middlewares.AuthMiddleware)
+	    r.Post("/follow/{id}", controllers.FollowUnfollowUser)
+	})
+
+
 	type reqbody2 struct{
 		Message string `json:"message"`
 	}

@@ -13,6 +13,8 @@ import (
 func UserRouter() http.Handler {
 	r := chi.NewRouter()
 
+	r.Get("/profile/{username}",controllers.GetUserProfile)
+
 	r.Post("/signup", controllers.SignUp)
 	r.Post("/login", controllers.Login)
 	r.Post("/logout", controllers.Logout)
@@ -20,6 +22,7 @@ func UserRouter() http.Handler {
 	r.Group(func(r chi.Router){
 		r.Use(middlewares.AuthMiddleware)
 	    r.Post("/follow/{id}", controllers.FollowUnfollowUser)
+		r.Post("/update/{id}", controllers.UpdateUser)
 	})
 
 

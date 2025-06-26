@@ -2,7 +2,7 @@ package models
 
 type Post struct{
 	ID int `json:"id"`
-	PostedBy int `json:"postedBy"` 
+	PostedBy int `json:"posted_by"` 
 	Text string `json:"text"`
 	Img  string `json:"img"`
 	Likes int `json:"likes"`

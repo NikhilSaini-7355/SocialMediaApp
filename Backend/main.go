@@ -31,6 +31,7 @@ func main() {
 	port := os.Getenv("PORT");
 
 	r.Mount("/api/users",routes.UserRouter())
+	r.Mount("/api/posts",routes.PostRouter())
 
 	fmt.Println("Server running on http://localhost:"+port)
 	http.ListenAndServe(":"+port, r)
